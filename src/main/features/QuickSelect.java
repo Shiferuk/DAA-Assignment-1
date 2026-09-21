@@ -3,60 +3,48 @@ package main.features;
 import java.util.Random;
 
 public class QuickSelect {
-    private Random RAND = new Random();
+    private static final Random random = new Random(42);
 
-    public int select(int[] a, int k) {
-        if (a == null || a.length == 0) {
-            throw new IllegalArgumentException("Array must not be empty or null.");
+    public static int select(int[] arr, int num, Metrics metrics) {
+        if (arr == null || arr.length == 0 || num < 0 || num >= arr.length) {
+            throw new IllegalArgumentException("Invalid input array or index num out of range.");
         }
-        if (k < 0 || k >= a.length) {
-            throw new IllegalArgumentException("k is out of bounds. Must be between 0 and " + (a.length - 1));
-        }
-
-        int low = 0;
-        int high = a.length - 1;
-
-        while (low <= high) {
-            int randomIndex = low + RAND.nextInt(high - low + 1);
-            swap(a, low, randomIndex);
-
-            int[] bounds = partition3Way(a, low, high);
-            int lt = bounds[0];
-            int gt = bounds[1];
-
-            if (k < lt) {
-                high = lt - 1;
-            } else if (k > gt) {
-                low = gt + 1;
-            } else {
-                return a[k];
-            }
-        }
-
-        throw new IllegalArgumentException("Element not found for position k.");
+        metrics.enterRecursion();
+        int result = quickSelect(arr, 0, arr.length - 1, num, metrics);
+        metrics.exitRecursion();
+        return result;
     }
 
-    private int[] partition3Way(int[] a, int low, int high) {
-        int pivot = a[low];
-        int lt = low;
-        int i = low + 1;
-        int gt = high;
-
-        while (i <= gt) {
-            if (a[i] < pivot) {
-                swap(a, lt++, i++);
-            } else if (a[i] > pivot) {
-                swap(a, i, gt--);
-            } else {
-                i++;
-            }
+    private static int quickSelect(int[] arr, int low, int high, int num,  Metrics metrics) {
+        if (low == high) {
+            return arr[low];
         }
-        return new int[]{lt, gt};
+
+        int pivotIdx = low + random.nextInt(high - low + 1);
+        swap(arr, low, pivotIdx);
+
+        int[] res_p = QuickSort.partition3Way(arr, low, high, metrics);
+
+        if (num >= res_p[0] && num <= res_p[1]) {
+            return arr[num];
+        } else if (num < res_p[0]) {
+            metrics.enterRecursion();
+            int res = quickSelect(arr, low, res_p[0] - 1, num, metrics);
+            metrics.exitRecursion();
+            return res;
+        } else {
+            metrics.enterRecursion();
+            int res = quickSelect(arr, res_p[1] + 1, high, num, metrics);
+            metrics.exitRecursion();
+            return res;
+        }
     }
 
-    private void swap(int[] a, int i, int j) {
+    private static void swap(int[] a, int i, int j) {
         int temp = a[i];
         a[i] = a[j];
         a[j] = temp;
     }
+
+
 }

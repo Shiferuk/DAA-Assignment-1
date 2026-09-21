@@ -1,65 +1,55 @@
 package main.features;
 
-import java.util.Arrays;
-
 public class MergeSort {
-    private int cutoff = 15;
+    private static int stopOn = 15;
 
-    public void sort(int[] a) {
-        if (a == null || a.length <= 1) {
+    public static void sort(int[] arr, Metrics metrics) {
+        if (arr == null || arr.length <= 1) {
             return;
         }
-        int[] buffer = new int[a.length];
-        mergeSort(a, buffer, 0, a.length - 1);
+        int[] arr_2 = new int[arr.length];
+        metrics.enterRecursion();
+        mergeSort(arr, arr_2, 0, arr.length - 1, metrics);
+        metrics.exitRecursion();
     }
 
-    private void mergeSort(int[] a, int[] buffer, int low, int high) {
-        if (high - low + 1 <= cutoff) {
-            insertionSort(a, low, high);
+    private static void mergeSort(int[] arr, int[] arr_2, int low, int high, Metrics metrics) {
+        if (high - low + 1 <= stopOn) {
+            InsertionSort.insertionSort(arr, low, high, metrics);
             return;
         }
-
         int mid = low + (high - low) / 2;
-        mergeSort(a, buffer, low, mid);
-        mergeSort(a, buffer, mid + 1, high);
-
-        if (a[mid] <= a[mid + 1]) {
-            return;
-        }
-
-        merge(a, buffer, low, mid, high);
+        metrics.enterRecursion();
+        mergeSort(arr, arr_2, low, mid, metrics);
+        metrics.exitRecursion();
+        metrics.enterRecursion();
+        mergeSort(arr, arr_2, mid + 1, high, metrics);
+        metrics.exitRecursion();
+        merge(arr, arr_2, low, mid, high, metrics);
     }
 
-    private void merge(int[] a, int[] buffer, int low, int mid, int high) {
+    private static void merge(int[] arr, int[] arr_2, int low, int mid, int high, Metrics metrics) {
         for (int k = low; k <= high; k++) {
-            buffer[k] = a[k];
+            arr_2[k] = arr[k];
         }
-
         int i = low;
         int j = mid + 1;
 
         for (int k = low; k <= high; k++) {
             if (i > mid) {
-                a[k] = buffer[j++];
+                arr[k] = arr_2[j++];
             } else if (j > high) {
-                a[k] = buffer[i++];
-            } else if (buffer[j] < buffer[i]) {
-                a[k] = buffer[j++];
+                arr[k] = arr_2[i++];
             } else {
-                a[k] = buffer[i++];
+                metrics.incrementComparisons();
+                if (arr_2[j] < arr_2[i]) {
+                    arr[k] = arr_2[j++];
+                } else {
+                    arr[k] = arr_2[i++];
+                }
             }
         }
     }
 
-    private void insertionSort(int[] a, int low, int high) {
-        for (int i = low + 1; i <= high; i++) {
-            int temp = a[i];
-            int j = i - 1;
-            while (j >= low && a[j] > temp) {
-                a[j + 1] = a[j];
-                j--;
-            }
-            a[j + 1] = temp;
-        }
-    }
+
 }
