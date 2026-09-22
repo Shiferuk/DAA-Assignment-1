@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("results.csv"))) {
-            writer.println("algorithm,input,n,time_ms,comparisons,max_depth");
+            writer.println("algorithm,  input,                  n,      time_ms,  comparisons,max_depth");
             writer.flush();
             for (int n : sizes) {
                 for (String type : inputTypes) {
@@ -63,7 +63,7 @@ public class Main {
         long medianComp = comps[repeats / 2];
         int medianDepth = depths[repeats / 2];
 
-        writer.printf("%s,%s,%d,%d,%d,%d%n", algo, inputType, n, medianTime, medianComp, medianDepth);
+        writer.printf("%-13s,%-13s,%10d,%8d,%11d,%7d%n", algo, inputType, n, medianTime, medianComp, medianDepth);
         writer.flush();
     }
 

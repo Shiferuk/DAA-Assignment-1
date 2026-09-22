@@ -14,7 +14,7 @@ public class MergeSort {
     }
 
     private static void mergeSort(int[] arr, int[] arr_2, int low, int high, Metrics metrics) {
-        if (low >= high) { /*(high - low + 1 <= stopOn) {*/
+        if (low >= high) {
             InsertionSort.insertionSort(arr, low, high, metrics);
             return;
         }
